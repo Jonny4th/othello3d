@@ -13,6 +13,18 @@ public class GameplayManager : MonoBehaviour
     [SerializeField]
     private GameParametersEvent m_StartGameEvent;
 
+    [SerializeField]
+    private GameplayUiDataEvent m_HudDataEvent;
+
+    [SerializeField]
+    private GameplayScoreEvent m_ScoreEvent;
+
+    [SerializeField]
+    private FactionEvent m_TurnSwitchEvent;
+
+    [SerializeField]
+    private BooleanEventChannel m_HudActivateEvent;
+
     [Header("Gameplay")]
     [SerializeField]
     private Cell m_CellPrototype;
@@ -26,9 +38,15 @@ public class GameplayManager : MonoBehaviour
     [SerializeField]
     private Transform m_BoardParent;
 
-    [Header("UIs")]
+    [Header("Debug")]
     [SerializeField]
-    private BaseHUD m_Hud;
+    private bool m_IsDebug;
+    [SerializeField]
+    private GameParameters m_DebugConfig;
+
+    //[Header("UIs")]
+    //[SerializeField]
+    //private BaseHUD m_Hud;
 
     private Cell[,] m_Cells;
     private bool m_IsPlaying = false;
@@ -46,6 +64,12 @@ public class GameplayManager : MonoBehaviour
     private void Awake()
     {
         m_StartGameEvent.AddListener(StartGame);
+    }
+
+    [ContextMenu("Debug/StartGame")]
+    public void StartGame()
+    {
+        StartGame(m_DebugConfig);
     }
 
     public void StartGame(GameParameters parameters)
@@ -78,10 +102,21 @@ public class GameplayManager : MonoBehaviour
 
         Faction playerFaction = parameters.PlayerFaction;
         //set UIs
-        m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
-        m_Hud.SetScore(2, 2);
-        m_Hud.SetPlayerTurn(Faction.Black);
-        m_Hud.Show();
+        GameplayUIData uiData = new()
+        {
+            BlackPlayerName = parameters.BlackPlayer,
+            WhitePlayerName = parameters.WhitePlayer,
+        };
+
+        m_HudDataEvent.Invoke(uiData);
+        m_ScoreEvent.Invoke((2, 2));
+        m_TurnSwitchEvent.Invoke(Faction.Black);
+        m_HudActivateEvent.Invoke(true);
+
+        //m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
+        //m_Hud.SetScore(2, 2);
+        //m_Hud.SetPlayerTurn(Faction.Black);
+        //m_Hud.Show();
 
         CreateBoard();
         IsBlackTurn = true;
@@ -92,7 +127,11 @@ public class GameplayManager : MonoBehaviour
     public void TurnPhase()
     {
         var currentPlayer = IsBlackTurn ? Faction.Black : Faction.White;
-        m_Hud.SetPlayerTurn(currentPlayer);
+
+
+        m_TurnSwitchEvent.Invoke(currentPlayer);
+        //m_Hud.SetPlayerTurn(currentPlayer);
+
         m_IsBotTurn = currentPlayer == m_BotColor && m_IsPlaying;
 
         var boardState = new BoardState()
@@ -119,7 +158,8 @@ public class GameplayManager : MonoBehaviour
 
         m_EndGameEvent.Invoke(boardState);
 
-        m_Hud.Hide();
+        m_HudActivateEvent.Invoke(false);
+        //m_Hud.Hide();
     }
 
     private IEnumerator RunGameLogic(GameParameters parameters)
@@ -138,10 +178,20 @@ public class GameplayManager : MonoBehaviour
 
         Faction playerFaction = parameters.PlayerFaction;
         //set UIs
-        m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
-        m_Hud.SetScore(2, 2);
-        m_Hud.SetPlayerTurn(Faction.Black);
-        m_Hud.Show();
+        GameplayUIData uiData = new()
+        {
+            BlackPlayerName = parameters.BlackPlayer,
+            WhitePlayerName = parameters.WhitePlayer,
+        };
+
+        m_HudDataEvent.Invoke(uiData);
+        m_ScoreEvent.Invoke((2, 2));
+        m_TurnSwitchEvent.Invoke(Faction.Black);
+        m_HudActivateEvent.Invoke(true);
+        //m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
+        //m_Hud.SetScore(2, 2);
+        //m_Hud.SetPlayerTurn(Faction.Black);
+        //m_Hud.Show();
 
         //run game
         while(m_IsPlaying)
@@ -155,7 +205,15 @@ public class GameplayManager : MonoBehaviour
 
     private void CreateBoard()
     {
-        m_Cells ??= BoardCreator.CreateBoard(m_CellPrototype, m_BoardWidth, m_BoardHeight, m_BoardParent);
+        if(m_Cells == null)
+        {
+            BoardCreator<Cell> creator = new();
+            creator.SetParent(m_BoardParent)
+                .SetPrototype(m_CellPrototype)
+                .SetDimension(m_BoardWidth, m_BoardHeight);
+
+            m_Cells = creator.CreateBoard(BuildMode.D3);
+        }
 
         var initialState = new BoardStateCreator().Build();
 
@@ -253,7 +311,9 @@ public class GameplayManager : MonoBehaviour
         boardState.Cells = ConvertCellsToTokenMap(m_Cells);
 
         (int a, int b) = m_GameRules.CountTokens(boardState);
-        m_Hud.SetScore(a, b);
+
+        m_ScoreEvent.Invoke((a,b));
+        //m_Hud.SetScore(a, b);
 
         return boardState;
     }

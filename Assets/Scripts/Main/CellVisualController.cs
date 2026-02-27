@@ -1,45 +1,37 @@
 using Core;
 using UnityEngine;
 
-public class CellVisualController : MonoBehaviour
+public abstract class CellVisualController : MonoBehaviour
 {
-    [SerializeField]
-    SpriteRenderer m_SpriteRenderer;
+    public abstract Vector2 GetSize();
+    public abstract void ShowHintVisual();
 
-    [SerializeField]
-    Color m_HintColor = Color.yellow;
+    public abstract void HideHintVisual();
 
-    public void ShowHintVisual()
-    {
-        m_SpriteRenderer.gameObject.SetActive(true);
-        m_SpriteRenderer.color = m_HintColor;
-    }
-
-    public void HideHintVisual()
-    {
-        m_SpriteRenderer.gameObject.SetActive(false);
-    }
-
-    public void SetToken(Faction token)
+    public virtual void SetToken(Faction token)
     {
         Debug.Log($"Placing token: {token} at cell: {name}");
 
-        switch (token)
+        switch(token)
         {
             case Faction.None:
-                m_SpriteRenderer.gameObject.SetActive(false);
+                SetEmptyCell();
                 break;
             case Faction.Black:
-                m_SpriteRenderer.gameObject.SetActive(true);
-                m_SpriteRenderer.color = Color.black;
+                SetBlackToken();
                 break;
             case Faction.White:
-                m_SpriteRenderer.gameObject.SetActive(true);
-                m_SpriteRenderer.color = Color.white;
+                SetWhiteToken();
                 break;
             default:
                 Debug.LogWarning($"Unknown token type: {token}");
                 break;
         }
     }
+
+    protected abstract void SetWhiteToken();
+
+    protected abstract void SetBlackToken();
+
+    protected abstract void SetEmptyCell();
 }

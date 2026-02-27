@@ -19,6 +19,8 @@ public class Cell : MonoBehaviour, ICell
 
     public event Action<ICell> OnCellClicked;
 
+    public Vector2 GetSize() => m_CellStateController.GetSize();
+
     public void SetCoordinates(int x, int y)
     {
         m_Coordinates = new Coordinates(x, y);
@@ -69,6 +71,8 @@ public interface ICell
     Faction CurrentToken { get; }
 
     event Action<ICell> OnCellClicked;
+
+    Vector2 GetSize();
 
     void HideHintVisual();
     void SetCoordinates(int x, int y);
