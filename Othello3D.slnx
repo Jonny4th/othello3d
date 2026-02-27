@@ -1,0 +1,12 @@
+﻿<Solution>
+  <Project Path="Tests.PlayMode.csproj" />
+  <Project Path="Extensions.csproj" />
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="Events.csproj" />
+  <Project Path="Tests.EditMode.csproj" />
+  <Project Path="Main.Models.csproj" />
+  <Project Path="Core.csproj" />
+  <Project Path="Main.UIs.csproj" />
+  <Project Path="UIs.csproj" />
+  <Project Path="Main.csproj" />
+</Solution>

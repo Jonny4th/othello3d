@@ -1,0 +1,17 @@
+{
+    "name": "Main.UIs",
+    "rootNamespace": "",
+    "references": [
+        "GUID:854602359696a764bb2257d84b4c507f",
+        "GUID:ea6bea521c5d61549b2ccecac66484e9"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
