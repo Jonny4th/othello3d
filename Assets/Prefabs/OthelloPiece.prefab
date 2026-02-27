@@ -1593,6 +1593,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b52ab2bac08db284e834cc35801ef402, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Main::CellVisualController_3d
-  m_SpriteRenderer: {fileID: 0}
-  m_HintColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  m_Renderer: {fileID: 7191247246274636198}
+  m_PieceRenderer: {fileID: 7191247246274636198}
+  m_CellRenderer: {fileID: 0}
+  m_Animator: {fileID: 3419517705214221734}
+  m_Size: {x: 1, y: 1}
+  m_DefaultColor: {fileID: 2100000, guid: 383f725dac044b74cb28530954ac4be0, type: 2}
+  m_HintColor: {fileID: 2100000, guid: 6c21c789e10d7c74fb0a898c13ee0f48, type: 2}
