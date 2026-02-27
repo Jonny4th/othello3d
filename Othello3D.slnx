@@ -9,4 +9,5 @@
   <Project Path="Core.csproj" />
   <Project Path="Main.UIs.csproj" />
   <Project Path="UIs.csproj" />
+  <Project Path="Generics.csproj" />
 </Solution>

@@ -33,17 +33,21 @@ public class CellVisualController_3d : CellVisualController
 
     public override void HideHintVisual()
     {
-        m_CellRenderer.material = m_HintColor;
+        m_CellRenderer.material = m_DefaultColor;
     }
 
     protected override void SetWhiteToken()
     {
+        HideHintVisual();
         Show();
+        m_Animator.SetBool("IsWhite", true);
     }
 
     protected override void SetBlackToken()
     {
+        HideHintVisual();
         Show();
+        m_Animator.SetBool("IsWhite", false);
     }
 
     protected override void SetEmptyCell()

@@ -246,6 +246,7 @@ public class GameplayManager : MonoBehaviour
 
     private void OnCellClicked(ICell cell)
     {
+        Debug.Log("click");
         if(m_Bot != null && m_IsBotTurn) return; //block player from clicking while bot is making a move
         ProcessMove(cell);
     }

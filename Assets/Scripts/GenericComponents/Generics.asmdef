@@ -1,12 +1,8 @@
 {
-    "name": "Main",
+    "name": "Generics",
     "rootNamespace": "",
     "references": [
-        "GUID:854602359696a764bb2257d84b4c507f",
-        "GUID:18286da2651ffe04eb165cbe3abb437e",
-        "GUID:ea6bea521c5d61549b2ccecac66484e9",
-        "GUID:ee8fd258432778047abfdb16a0bc9077",
-        "GUID:0fbd48742671b844aaacb3c72bb400e4"
+        "GUID:75469ad4d38634e559750d17036d5f7c"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

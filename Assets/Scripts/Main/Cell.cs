@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Cell : MonoBehaviour, ICell
+public class Cell : MonoBehaviour, ICell, ISelectable
 {
     [SerializeField]
     private Coordinates m_Coordinates;
@@ -62,6 +62,12 @@ public class Cell : MonoBehaviour, ICell
 
             OnCellClicked?.Invoke(this);
         }
+    }
+
+    public void Select()
+    {
+        Debug.Log($"clicked {name}");
+        OnCellClicked?.Invoke(this);
     }
 }
 

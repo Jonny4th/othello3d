@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 351515356624001194}
   m_Layer: 0
   m_Name: OthelloCell
-  m_TagString: Untagged
+  m_TagString: BoardTile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -63,6 +63,7 @@ GameObject:
   - component: {fileID: 6878884879661233495}
   - component: {fileID: 3755820550684306993}
   - component: {fileID: 2959110670622506690}
+  - component: {fileID: 935701059678628201}
   m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
@@ -305,7 +306,7 @@ MonoBehaviour:
   m_PreserveMeshAssetOnDestroy: 0
   assetGuid: 
   m_Mesh: {fileID: 0}
-  m_VersionIndex: 6807
+  m_VersionIndex: 6813
   m_IsSelectable: 1
   m_SelectedFaces: 
   m_SelectedEdges: []
@@ -391,6 +392,28 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7003583080593753220}
   m_Mesh: {fileID: 0}
+--- !u!64 &935701059678628201
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7003583080593753220}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!1001 &8599818190401476893
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -401,7 +424,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4607215899598373187, guid: c0ac8b8ea273b4c448323d188b1c67b9, type: 3}
       propertyPath: m_VersionIndex
-      value: 3907
+      value: 3910
       objectReference: {fileID: 0}
     - target: {fileID: 5029059938718874284, guid: c0ac8b8ea273b4c448323d188b1c67b9, type: 3}
       propertyPath: m_LocalPosition.x
