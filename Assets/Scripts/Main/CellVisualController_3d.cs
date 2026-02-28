@@ -25,7 +25,18 @@ public class CellVisualController_3d : CellVisualController
     private void Hide() => m_PieceRenderer.enabled = false;
 
     public override Vector2 GetSize() => m_Size;
-    
+
+    private const string FactionTag = "IsWhite";
+    private const string OccupiedTag = "IsOccupied";
+    private const string PlaceTriggerTag = "Place";
+
+    private bool m_IsOccupied = false;
+
+    private void Awake()
+    {
+        m_Animator.SetBool(OccupiedTag, m_IsOccupied);
+    }
+
     public override void ShowHintVisual()
     {
         m_CellRenderer.material = m_HintColor;
@@ -38,20 +49,33 @@ public class CellVisualController_3d : CellVisualController
 
     protected override void SetWhiteToken()
     {
-        HideHintVisual();
-        Show();
-        m_Animator.SetBool("IsWhite", true);
+        SetFaction(true);
     }
 
     protected override void SetBlackToken()
     {
-        HideHintVisual();
-        Show();
-        m_Animator.SetBool("IsWhite", false);
+        SetFaction(false);
     }
 
     protected override void SetEmptyCell()
     {
+        m_IsOccupied = false;
         Hide();
+    }
+
+    private void SetFaction(bool isWhite)
+    {
+        HideHintVisual();
+        Show();
+
+        m_Animator.SetBool(FactionTag, isWhite);
+
+        if(!m_IsOccupied)
+        {
+            m_Animator.SetTrigger(PlaceTriggerTag);
+        }
+
+        m_IsOccupied = true;
+        m_Animator.SetBool(OccupiedTag, m_IsOccupied);
     }
 }

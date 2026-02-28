@@ -45,10 +45,6 @@ public class GameplayManager : MonoBehaviour
     [SerializeField]
     private GameParameters m_DebugConfig;
 
-    //[Header("UIs")]
-    //[SerializeField]
-    //private BaseHUD m_Hud;
-
     private Cell[,] m_Cells;
     private bool m_IsPlaying = false;
 
@@ -170,7 +166,6 @@ public class GameplayManager : MonoBehaviour
         m_EndGameEvent.Invoke(boardState);
 
         m_HudActivateEvent.Invoke(false);
-        //m_Hud.Hide();
     }
 
     private IEnumerator RunGameLogic(GameParameters parameters)
@@ -199,10 +194,6 @@ public class GameplayManager : MonoBehaviour
         m_ScoreEvent.Invoke((2, 2));
         m_TurnSwitchEvent.Invoke(Faction.Black);
         m_HudActivateEvent.Invoke(true);
-        //m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
-        //m_Hud.SetScore(2, 2);
-        //m_Hud.SetPlayerTurn(Faction.Black);
-        //m_Hud.Show();
 
         //run game
         while(m_IsPlaying)
@@ -271,7 +262,7 @@ public class GameplayManager : MonoBehaviour
 
         var token = IsBlackTurn ? Faction.Black : Faction.White;
         m_Cells[cell.Coordinates.X, cell.Coordinates.Y].SetToken(token);
-        await Awaitable.WaitForSecondsAsync(0.5f);
+        await Awaitable.WaitForSecondsAsync(1f);
 
         var boardState = new BoardState()
         {
