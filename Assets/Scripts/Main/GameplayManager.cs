@@ -2,6 +2,7 @@ using Core;
 using Main.Models;
 using System.Collections;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public class GameplayManager : MonoBehaviour
@@ -60,6 +61,16 @@ public class GameplayManager : MonoBehaviour
     private Faction m_BotColor = Faction.None; // bot occupancy = none to ensure bot is not used by default
 
     public bool IsBlackTurn = true; // Track whose turn it is.
+
+#if UNITY_EDITOR
+    private void OnGUI()
+    {
+        if(GUI.Button(new Rect(0, 0, 100, 20), "Start Game"))
+        {
+            StartGame();
+        }
+    }
+#endif
 
     private void Awake()
     {
@@ -231,7 +242,6 @@ public class GameplayManager : MonoBehaviour
         }
     }
 
-
     private void ShowHint(BoardState boardState, Faction player)
     {
         m_CurrentLegalMoves = m_GameRules.FindLegalMoves(boardState, player);
@@ -251,7 +261,7 @@ public class GameplayManager : MonoBehaviour
         ProcessMove(cell);
     }
 
-    private void ProcessMove(ICell cell)
+    private async void ProcessMove(ICell cell)
     {
         if(cell.CurrentToken != Faction.None) return;
 
@@ -261,6 +271,7 @@ public class GameplayManager : MonoBehaviour
 
         var token = IsBlackTurn ? Faction.Black : Faction.White;
         m_Cells[cell.Coordinates.X, cell.Coordinates.Y].SetToken(token);
+        await Awaitable.WaitForSecondsAsync(0.5f);
 
         var boardState = new BoardState()
         {
@@ -268,7 +279,7 @@ public class GameplayManager : MonoBehaviour
             Cells = ConvertCellsToTokenMap(m_Cells)
         };
 
-        var updatedBoardState = Resolve(boardState);
+        var updatedBoardState = await Resolve(boardState);
 
         if(m_GameRules.IsGameOver(updatedBoardState))
         {
@@ -301,22 +312,25 @@ public class GameplayManager : MonoBehaviour
         TurnPhase();
     }
 
-    private BoardState Resolve(BoardState boardState)
+    private async Task<BoardState> Resolve(BoardState boardState)
     {
         foreach((int x, int y) in m_GameRules.GetAllOutflankedTokens(boardState))
         {
             Debug.Log($"{x}{y}");
             m_Cells[x, y].SetToken(boardState.LastPlacedDisc);
+            boardState.Cells = ConvertCellsToTokenMap(m_Cells);
+            (int a, int b) = m_GameRules.CountTokens(boardState);
+            m_ScoreEvent.Invoke((a,b));
+
+            await Awaitable.WaitForSecondsAsync(0.5f);
         }
 
-        boardState.Cells = ConvertCellsToTokenMap(m_Cells);
-
-        (int a, int b) = m_GameRules.CountTokens(boardState);
-
-        m_ScoreEvent.Invoke((a,b));
-        //m_Hud.SetScore(a, b);
-
         return boardState;
+    }
+
+    private IEnumerator ResolvePlayerAction(BoardState boardState)
+    {
+        yield return null;
     }
 
     public Faction[,] ConvertCellsToTokenMap(ICell[,] cells)
