@@ -60,6 +60,7 @@ public class CellVisualController_3d : CellVisualController
     protected override void SetEmptyCell()
     {
         m_IsOccupied = false;
+        m_Animator.SetBool(OccupiedTag, m_IsOccupied);
         Hide();
     }
 
