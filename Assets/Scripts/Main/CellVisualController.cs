@@ -8,7 +8,7 @@ public abstract class CellVisualController : MonoBehaviour
 
     public abstract void HideHintVisual();
 
-    public virtual void SetToken(Faction token)
+    public void SetToken(Faction token)
     {
         Debug.Log($"Placing token: {token} at cell: {name}");
 
@@ -29,9 +29,9 @@ public abstract class CellVisualController : MonoBehaviour
         }
     }
 
-    protected abstract void SetWhiteToken();
+    public abstract void SetWhiteToken();
 
-    protected abstract void SetBlackToken();
+    public abstract void SetBlackToken();
 
-    protected abstract void SetEmptyCell();
+    public abstract void SetEmptyCell();
 }

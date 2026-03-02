@@ -21,19 +21,19 @@ public class CellVisualController_2d : CellVisualController
         m_SpriteRenderer.gameObject.SetActive(false);
     }
 
-    protected override void SetWhiteToken()
+    public override void SetWhiteToken()
     {
         m_SpriteRenderer.gameObject.SetActive(true);
         m_SpriteRenderer.color = Color.white;
     }
 
-    protected override void SetBlackToken()
+    public override void SetBlackToken()
     {
         m_SpriteRenderer.gameObject.SetActive(true);
         m_SpriteRenderer.color = Color.black;
     }
 
-    protected override void SetEmptyCell()
+    public override void SetEmptyCell()
     {
         m_SpriteRenderer.gameObject.SetActive(false);
     }

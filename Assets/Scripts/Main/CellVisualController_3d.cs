@@ -39,6 +39,12 @@ public class CellVisualController_3d : CellVisualController
 
     public override void ShowHintVisual()
     {
+        if(m_IsOccupied)
+        {
+            Debug.LogWarning("Cannot show hint, tile is occupied.");
+            return;
+        }
+
         m_CellRenderer.material = m_HintColor;
     }
 
@@ -47,17 +53,17 @@ public class CellVisualController_3d : CellVisualController
         m_CellRenderer.material = m_DefaultColor;
     }
 
-    protected override void SetWhiteToken()
+    public override void SetWhiteToken()
     {
         SetFaction(true);
     }
 
-    protected override void SetBlackToken()
+    public override void SetBlackToken()
     {
         SetFaction(false);
     }
 
-    protected override void SetEmptyCell()
+    public override void SetEmptyCell()
     {
         m_IsOccupied = false;
         m_Animator.SetBool(OccupiedTag, m_IsOccupied);
