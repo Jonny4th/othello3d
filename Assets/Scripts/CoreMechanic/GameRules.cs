@@ -53,13 +53,13 @@ namespace Core
         private readonly Vector2Int[] directions = new Vector2Int[]
         {
             new (0, 1), // Up
-            new (0, -1), // Down
-            new (-1, 0),// Left
-            new (1, 0), // Right
-            new (-1, 1),// Up-Left
             new (1, 1), // Up-Right
-            new (-1, -1),// Down-Left
+            new (1, 0), // Right
             new (1, -1),// Down-Right
+            new (0, -1), // Down
+            new (-1, -1),// Down-Left
+            new (-1, 0),// Left
+            new (-1, 1),// Up-Left
         };
 
         public (int black, int white) CountTokens(BoardState state)

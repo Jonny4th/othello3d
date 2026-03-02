@@ -52,9 +52,9 @@ public class GameplayManager : MonoBehaviour
     private GameRules m_GameRules = new();
     (int, int)[] m_CurrentLegalMoves;
 
-    private Bot m_Bot;
+    private OthelloBot m_Bot = null;
     private bool m_IsBotTurn = false;
-    private Faction m_BotColor = Faction.None; // bot occupancy = none to ensure bot is not used by default
+    //private Faction m_BotColor = Faction.None; // bot occupancy = none to ensure bot is not used by default
 
     public bool IsBlackTurn = true; // Track whose turn it is.
 
@@ -79,7 +79,7 @@ public class GameplayManager : MonoBehaviour
         StartGame(m_DebugConfig);
     }
 
-    public void StartGame(GameParameters parameters)
+    public async void StartGame(GameParameters parameters)
     {
         if(m_Game != null || m_IsPlaying)
         {
@@ -101,8 +101,8 @@ public class GameplayManager : MonoBehaviour
 
         if(parameters.IsBotUsed)
         {
-            m_Bot = new();
-            m_BotColor = parameters.PlayerFaction == Faction.Black ? Faction.White : Faction.Black;
+            m_Bot = new Bot_RandomMove();
+            m_Bot.SetFaction(parameters.PlayerFaction == Faction.Black ? Faction.White : Faction.Black);
             m_Bot.SetGameRules(m_GameRules);
             m_Bot.OnBotMoveMade += HandleBotMoveMade;
         }
@@ -120,12 +120,7 @@ public class GameplayManager : MonoBehaviour
         m_TurnSwitchEvent.Invoke(Faction.Black);
         m_HudActivateEvent.Invoke(true);
 
-        //m_Hud.SetPlayerName(parameters.BlackPlayer, parameters.WhitePlayer);
-        //m_Hud.SetScore(2, 2);
-        //m_Hud.SetPlayerTurn(Faction.Black);
-        //m_Hud.Show();
-
-        CreateBoard();
+        await CreateBoard();
         IsBlackTurn = true;
 
         TurnPhase();
@@ -135,11 +130,9 @@ public class GameplayManager : MonoBehaviour
     {
         var currentPlayer = IsBlackTurn ? Faction.Black : Faction.White;
 
-
         m_TurnSwitchEvent.Invoke(currentPlayer);
-        //m_Hud.SetPlayerTurn(currentPlayer);
 
-        m_IsBotTurn = currentPlayer == m_BotColor && m_IsPlaying;
+        m_IsBotTurn = m_Bot != null && currentPlayer == m_Bot.Faction && m_IsPlaying;
 
         var boardState = new BoardState()
         {
@@ -151,7 +144,7 @@ public class GameplayManager : MonoBehaviour
 
         if(m_Bot != null && m_IsBotTurn && m_IsPlaying)
         {
-            m_Bot.MakeDecision(boardState, m_BotColor);
+            m_Bot.MakeDecision(boardState);
         }
     }
 
@@ -173,13 +166,14 @@ public class GameplayManager : MonoBehaviour
         //pre-game
         if(parameters.IsBotUsed)
         {
-            m_Bot = new();
-            m_BotColor = parameters.PlayerFaction == Faction.Black ? Faction.White : Faction.Black;
+            m_Bot = new Bot_RandomMove();
+            m_Bot.SetFaction(parameters.PlayerFaction == Faction.Black ? Faction.White : Faction.Black);
             m_Bot.SetGameRules(m_GameRules);
             m_Bot.OnBotMoveMade += HandleBotMoveMade;
         }
 
-        CreateBoard();
+        yield return CreateBoard();
+
         IsBlackTurn = true;
 
         Faction playerFaction = parameters.PlayerFaction;
@@ -205,7 +199,7 @@ public class GameplayManager : MonoBehaviour
         TriggerEndGame(new());
     }
 
-    private void CreateBoard()
+    private async Task CreateBoard()
     {
         if(m_Cells == null)
         {
@@ -226,6 +220,8 @@ public class GameplayManager : MonoBehaviour
                 m_Cells[i, j].SetToken(initialState.Cells[i, j]);
             }
         }
+
+        await Awaitable.WaitForSecondsAsync(1);
 
         foreach(var cell in m_Cells)
         {
@@ -313,8 +309,10 @@ public class GameplayManager : MonoBehaviour
             (int a, int b) = m_GameRules.CountTokens(boardState);
             m_ScoreEvent.Invoke((a,b));
 
-            await Awaitable.WaitForSecondsAsync(0.5f);
+            await Awaitable.WaitForSecondsAsync(0.25f);
         }
+
+        await Awaitable.WaitForSecondsAsync(0.5f);
 
         return boardState;
     }

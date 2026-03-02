@@ -66,7 +66,7 @@ public class Cell : MonoBehaviour, ICell, ISelectable
 
     public void Select()
     {
-        Debug.Log($"clicked {name}");
+        Debug.Log($"{name} selected.");
         OnCellClicked?.Invoke(this);
     }
 }
