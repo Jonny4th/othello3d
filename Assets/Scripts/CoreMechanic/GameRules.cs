@@ -16,6 +16,12 @@ namespace Core
             Y = y;
         }
 
+        public Coordinates(Vector2Int vector2)
+        {
+            X = vector2.x;
+            Y = vector2.y;
+        }
+
         public Vector2Int ToVector2Int()
         {
             return new Vector2Int(X, Y);
@@ -40,12 +46,23 @@ namespace Core
         OutOfBounds,
     }
 
+    public enum Direction
+    {
+        Up,
+        UpRight,
+        Right,
+        DownRight,
+        Down,
+        DownLeft,
+        Left,
+        UpLeft
+    }
+
     public struct BoardState
     {
         public Coordinates LastPlacedDiscCoordinates;
         public Faction[,] Cells;
-
-        public Faction LastPlacedDisc => Cells[LastPlacedDiscCoordinates.X, LastPlacedDiscCoordinates.Y];
+        public readonly Faction LastPlacedDisc => Cells[LastPlacedDiscCoordinates.X, LastPlacedDiscCoordinates.Y];
     }
 
     public class GameRules

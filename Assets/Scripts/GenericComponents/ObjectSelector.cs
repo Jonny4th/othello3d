@@ -13,13 +13,11 @@ public class ObjectSelector : MonoBehaviour
     public void OnMouseClick(InputAction.CallbackContext callback)
     {
         if(callback.phase != InputActionPhase.Performed) return;
-        Debug.Log($"click pos {m_MousePosition}");
         Ray ray = Camera.main.ScreenPointToRay(m_MousePosition);
 
         if(Physics.Raycast(ray, out RaycastHit hit))
         {
             GameObject clickedObject = hit.collider.gameObject;
-            Debug.Log("Clicked on: " + clickedObject.name);
 
             clickedObject.GetComponentInParent<ISelectable>()?.Select();
         }

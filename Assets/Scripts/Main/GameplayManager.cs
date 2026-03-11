@@ -4,6 +4,7 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class GameplayManager : MonoBehaviour
 {
@@ -54,7 +55,6 @@ public class GameplayManager : MonoBehaviour
 
     private OthelloBot m_Bot = null;
     private bool m_IsBotTurn = false;
-    //private Faction m_BotColor = Faction.None; // bot occupancy = none to ensure bot is not used by default
 
     public bool IsBlackTurn = true; // Track whose turn it is.
 
@@ -65,18 +65,32 @@ public class GameplayManager : MonoBehaviour
         {
             StartGame();
         }
+
+        if(GUI.Button(new Rect(0, 25, 100, 20), "End Game"))
+        {
+            EndGame();
+        }
+    }
+
+    [ContextMenu("Debug/Start Game")]
+    public void StartGame()
+    {
+        StartGame(m_DebugConfig);
+    }
+
+    [ContextMenu("Debug/End Game")]
+    public void EndGame()
+    {
+        BeginEndGameProcess(new()
+        {
+            Cells = ConvertCellsToTokenMap(m_Cells)
+        });
     }
 #endif
 
     private void Awake()
     {
         m_StartGameEvent.AddListener(StartGame);
-    }
-
-    [ContextMenu("Debug/StartGame")]
-    public void StartGame()
-    {
-        StartGame(m_DebugConfig);
     }
 
     public async void StartGame(GameParameters parameters)
@@ -129,7 +143,7 @@ public class GameplayManager : MonoBehaviour
     public void TurnPhase()
     {
         var currentPlayer = IsBlackTurn ? Faction.Black : Faction.White;
-
+        Debug.Log($"Turn Phase: {currentPlayer} starts");
         m_TurnSwitchEvent.Invoke(currentPlayer);
 
         m_IsBotTurn = m_Bot != null && currentPlayer == m_Bot.Faction && m_IsPlaying;
@@ -140,16 +154,31 @@ public class GameplayManager : MonoBehaviour
             Cells = ConvertCellsToTokenMap(m_Cells)
         };
 
-        ShowHint(boardState, currentPlayer);
+        m_CurrentLegalMoves = m_GameRules.FindLegalMoves(boardState, currentPlayer);
 
+        if(m_CurrentLegalMoves.Length == 0) SwitchTurn();
+        
         if(m_Bot != null && m_IsBotTurn && m_IsPlaying)
         {
+            Debug.Log($"Turn Phase: Bot Making Decision");
             m_Bot.MakeDecision(boardState);
+            return;
+        }
+
+        Debug.Log($"Turn Phase: Player Making Decision");
+        foreach((int x, int y) in m_CurrentLegalMoves)
+        {
+            m_Cells[x, y].ShowHintVisual();
         }
     }
 
-    public void TriggerEndGame(BoardState boardState)
+    public void BeginEndGameProcess(BoardState boardState)
     {
+        Debug.Log($"Turn Phase: Game ends.");
+
+        m_IsPlaying = false;
+        m_IsBlockingPlayerInput = false;
+
         if(m_Bot != null) m_Bot.OnBotMoveMade -= HandleBotMoveMade;
 
         (int a, int b) = m_GameRules.CountTokens(boardState);
@@ -196,7 +225,7 @@ public class GameplayManager : MonoBehaviour
         }
 
         //post game
-        TriggerEndGame(new());
+        BeginEndGameProcess(new());
     }
 
     private async Task CreateBoard()
@@ -245,14 +274,29 @@ public class GameplayManager : MonoBehaviour
     {
         Debug.Log("click");
         if(m_Bot != null && m_IsBotTurn) return; //block player from clicking while bot is making a move
+        if(m_IsBlockingPlayerInput) return;
         ProcessMove(cell);
     }
 
+    private bool m_IsBlockingPlayerInput = false;
+
     private async void ProcessMove(ICell cell)
     {
-        if(cell.CurrentToken != Faction.None) return;
+        Debug.Log($"Turn Phase: Process Move");
 
-        if(!m_CurrentLegalMoves.Contains(cell.Coordinates.ToTuple())) return;
+        if(cell.CurrentToken != Faction.None)
+        {
+            Debug.LogWarning("Occupied tile cannot be processed.");
+            return;
+        }
+
+        if(!m_CurrentLegalMoves.Contains(cell.Coordinates.ToTuple()))
+        {
+            Debug.LogWarning("This tile is not a legal move.");
+            return;
+        }
+
+        m_IsBlockingPlayerInput = true;
 
         foreach(var c in m_Cells) c.HideHintVisual();
 
@@ -270,11 +314,11 @@ public class GameplayManager : MonoBehaviour
 
         if(m_GameRules.IsGameOver(updatedBoardState))
         {
-            m_IsPlaying = false;
-            TriggerEndGame(updatedBoardState);
+            BeginEndGameProcess(updatedBoardState);
             return;
         }
 
+        m_IsBlockingPlayerInput = false;
         SwitchTurn();
     }
 
@@ -294,6 +338,7 @@ public class GameplayManager : MonoBehaviour
 
     private void SwitchTurn()
     {
+        Debug.Log($"Turn Phase: Switch turn.");
         IsBlackTurn = !IsBlackTurn;
         m_IsBotTurn &= false;
         TurnPhase();
@@ -301,6 +346,8 @@ public class GameplayManager : MonoBehaviour
 
     private async Task<BoardState> Resolve(BoardState boardState)
     {
+        Debug.Log($"Turn Phase: Resolving");
+
         foreach((int x, int y) in m_GameRules.GetAllOutflankedTokens(boardState))
         {
             Debug.Log($"{x}{y}");

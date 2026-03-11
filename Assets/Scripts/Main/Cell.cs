@@ -12,10 +12,12 @@ public class Cell : MonoBehaviour, ICell, ISelectable
     [SerializeField]
     private CellVisualController m_CellStateController;
 
-    public Faction CurrentToken => m_CurrentToken;
-    private Faction m_CurrentToken = Faction.None;
+    public Faction CurrentToken => m_Tile.CurrentFaction;
 
-    private bool m_IsOccupied => m_CurrentToken != Faction.None;
+    private bool m_IsOccupied => m_Tile.CurrentFaction != Faction.None;
+
+    public Tile OthelloTile => m_Tile;
+    private Tile m_Tile = new();
 
     public event Action<ICell> OnCellClicked;
 
@@ -28,7 +30,7 @@ public class Cell : MonoBehaviour, ICell, ISelectable
 
     public void SetToken(Faction token)
     {
-        m_CurrentToken = token;
+        m_Tile.SetFaction(token);
         m_CellStateController.SetToken(token);
     }
 
@@ -75,6 +77,8 @@ public interface ICell
 {
     Coordinates Coordinates { get; }
     Faction CurrentToken { get; }
+
+    Tile OthelloTile { get; }
 
     event Action<ICell> OnCellClicked;
 
